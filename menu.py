@@ -97,4 +97,4 @@ class Menu:
         for i in range(len(self.items)):
             if name == self.items[i].name:
                 return self.items[i]
-        raise KeyError("Item 'name' not found in menu")
+        raise KeyError(f"Item '{name}' not found in menu")

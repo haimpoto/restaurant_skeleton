@@ -42,7 +42,7 @@ class MenuItem:
         return f"{self.name} - {MenuItem.format_price(self.price)}"
     
     def __repr__(self) -> str:
-       return f"MenuItem(name={self.name}, price{self.price}, description={self.description})"
+       return f"MenuItem(name={self.name}, price={self.price}, description={self.description})"
 
     def __eq__(self, other) -> bool:
         if isinstance(other, MenuItem):
@@ -82,7 +82,7 @@ class Appetizer(MenuItem):
     def get_total_price(self) -> float:
         if self.selected_bread is not None:
             return self.price + Appetizer.BREAD_PRICE
-        raise self.price
+        return self.price
     
     def get_category(self) -> str:
         return "Appetizers"

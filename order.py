@@ -84,7 +84,7 @@ class Order:
         {self.__items}
         ----------------------------------------
         Subtotal: ${self.get_subtotal():.2f}
-        Tip (X%): ${tip_percent:.2f}
+        Tip (X%): ${(self.get_subtotal() * tip_percent / 100)} ({tip_percent:.2f})%
         ========================================
         Total: ${self.get_total():.2f}
         ========================================"""
