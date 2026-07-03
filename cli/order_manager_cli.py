@@ -47,7 +47,7 @@ class OrderManagerCLI:
                 print("*** Invalid choice ***")
 
     def _display_menu(self):
-        os.system("cls")
+        os.system("cls" if os.name == "nt" else "clear")
         print( """
             ===== Order Management =====
             1. Open New Order
@@ -69,7 +69,7 @@ class OrderManagerCLI:
             print(table.number)
         user_choose = input("Choose table: ")
         if not user_choose.isdigit():
-            raise ValueError("*** Error: you nee choose number ***")
+            raise ValueError("*** Error: you need choose number ***")
         user_choose = int(user_choose)
         if user_choose not in tables:
             raise ValueError("*** Error: invalid table ***")
@@ -80,35 +80,46 @@ class OrderManagerCLI:
             self._add_items_loop(the_order)
     
     def _show_active_orders(self):
-        """
-        הצגת כל ההזמנות הפעילות.
-        
-        דרישות:
-        - לנקות מסך
-        - להציג כותרת "Active Orders"
-        - אם אין הזמנות, להציג "No active orders"
-        - אחרת, לעבור על כל ההזמנות ולהציג:
-            - פרטי ההזמנה (str של Order)
-            - "Current total: ₪XX.XX"
-        - לחכות ל-"Press Enter to go back..."
-        """
-        pass
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print("--- Active Orders ---")
+        active_orders = self.__restaurant.get_active_orders()
+        if not active_orders:
+            print("*** No active orders ***")
+        else:
+            for i, order in enumerate(active_orders):
+                print(i, ".", order, f"Current total: ${order.get_subtotal():.2f}")
+        input("Press Enter to go back...")
     
     def _manage_order(self):
-        """
-        עריכת הזמנה קיימת.
-        
-        דרישות:
-        - להציג רשימת הזמנות פעילות
-        - אם אין, להציג "*** No active orders ***" ולחזור
-        - לבקש "Table number to edit: "
-        - לחפש הזמנה פעילה לשולחן (get_order_by_table)
-        - אם לא נמצאה, להציג "*** No active order for table X ***"
-        - אם נמצאה, לקרוא ל-_edit_order_menu
-        """
-        pass
+        print("--- manage_order ---")
+        active_orders = self.__restaurant.get_active_orders()
+        if not active_orders:
+            print(" *** No active orders ***")
+            return
+        for order in active_orders:
+            print(order)
+        user_choose = input("Table number to edit: ")
+        if not user_choose.isdigit():
+            raise ValueError("*** Error: you need choose number ***")
+        user_choose = int(user_choose)
+        order = self.__restaurant.get_order_by_table(user_choose)
+        if not order:
+            print(f"*** Error No active order for table {user_choose} ***")
+        else:
+            self._edit_order_menu(order)
     
     def _edit_order_menu(self, order: Order):
+        while True:
+            print(f""" ===== Edit Order #{order.order_id} (Table {order.table.number}) =====
+            1. Show Order Items
+            2. Add Item
+            3. Remove Item
+            4. Show Current Bill
+            0. Back""")
+            user_choose = input("choose option: ")
+            if user_choose == "1":
+
+
         """
         תפריט עריכת הזמנה ספציפית.
         
