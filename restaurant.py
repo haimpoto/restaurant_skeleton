@@ -59,8 +59,9 @@ class Restaurant:
             raise ValueError(f"Table {table_number} does not exist")
         if not the_table.occupy():
             raise ValueError(f"Table {table_number} is already occupied")
-        # self.__active_orders.append(Order(the_table))
-        return Order(the_table)
+        the_order = Order(the_table)
+        self.__active_orders.append(the_order)
+        return the_order
     
     def get_active_orders(self) -> list:
         return self.__active_orders.copy()
@@ -114,22 +115,13 @@ class Restaurant:
     
     def get_revenue_by_category(self) -> dict:
         dictionary = {}
-        for
-        """
-        מחזיר הכנסות מחולקות לפי קטגוריה.
-        
-        Returns:
-            מילון {category: amount}
-        """
-        raise NotImplementedError("Implement this method")
-    
-     # --- Magic Methods ---
+        for order in self.__closed_orders:
+            for order_item in order.items:
+                cate = order_item.menu_item.get_category
+                if cate not in dictionary:
+                    dictionary[cate] = 0
+                dictionary[cate] += order_item.subtotal
+        return dictionary
     
     def __str__(self) -> str:
-        """
-        ייצוג מחרוזת.
-        
-        Returns:
-            "Restaurant 'name' - X tables, Y menu items"
-        """
-        raise NotImplementedError("Implement this method")
+        return f"Restaurant {self.name} - {len(self.__tables)} tables, {len(self.__menu)} menu items"

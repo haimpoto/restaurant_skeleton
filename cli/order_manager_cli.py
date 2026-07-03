@@ -2,6 +2,9 @@
 
 import os
 import sys
+
+from table import Table
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from restaurant import Restaurant
@@ -24,69 +27,57 @@ class OrderManagerCLI:
     """
     
     def __init__(self, restaurant: Restaurant):
-        """
-        אתחול מנהל ההזמנות.
-        
-        Args:
-            restaurant: אובייקט המסעדה
-        """
-        pass
+        self.__restaurant = restaurant
     
     def run(self):
-        """
-        לולאת תת-התפריט הראשית.
-        
-        דרישות:
-        - להציג תפריט (קריאה ל-_display_menu)
-        - לקבל בחירה מהמשתמש
-        - לטפל בבחירה:
-            "0" -> יציאה מהלולאה (break)
-            "1" -> פתיחת הזמנה (_open_new_order)
-            "2" -> הצגת הזמנות פעילות (_show_active_orders)
-            "3" -> עריכת הזמנה (_manage_order)
-            "4" -> סגירת חשבון (_close_order)
-            אחרת -> הודעת שגיאה
-        - הלולאה רצה עד שהמשתמש בוחר 0
-        
-        הדפסות צפויות (באנגלית):
-        - "Choose option: " לקלט
-        - "*** Invalid choice ***" לבחירה לא חוקית
-        - "Press Enter to continue..."
-        """
-        pass
-    
+        while True:
+            self._display_menu()
+            user_choose = input("Choose option: ")
+            if user_choose == "0":
+                break
+            elif user_choose == "1":
+                self._open_new_order()
+            elif user_choose == "2":
+                self._show_active_orders()
+            elif user_choose == "3":
+                self._manage_order()
+            elif user_choose == "4":
+                self._close_order()
+            else:
+                print("*** Invalid choice ***")
+
     def _display_menu(self):
-        """
-        הצגת תפריט ניהול הזמנות.
-        
-        דרישות:
-        - לנקות מסך
-        - להציג:
+        os.system("cls")
+        print( """
             ===== Order Management =====
             1. Open New Order
             2. Show Active Orders
             3. Edit Existing Order
             4. Close Order (Bill)
             0. Back to Main Menu
-        """
-        pass
-    
+        """)
+
+
     def _open_new_order(self):
-        """
-        פתיחת הזמנה חדשה לשולחן.
-        
-        דרישות:
-        - להציג "Open New Order" ככותרת
-        - להציג רשימת שולחנות פנויים
-        - אם אין שולחנות פנויים, להציג "*** No free tables ***" ולחזור
-        - לבקש "Table number: "
-        - לפתוח הזמנה (דרך self._restaurant.open_order)
-        - להציג "*** Order #X opened for table Y ***"
-        - לשאול "Add items now? (y/n): "
-        - אם כן, לקרוא ל-_add_items_loop
-        - לטפל בשגיאות (ValueError) ולהציג "*** Error: ... ***"
-        """
-        pass
+        print("----Open New Order----")
+        tables = self.__restaurant.get_free_tables()
+        if not tables:
+            print("*** No free tables ***")
+            return
+        print("---tables---")
+        for table in tables:
+            print(table.number)
+        user_choose = input("Choose table: ")
+        if not user_choose.isdigit():
+            raise ValueError("*** Error: you nee choose number ***")
+        user_choose = int(user_choose)
+        if user_choose not in tables:
+            raise ValueError("*** Error: invalid table ***")
+        the_order = self.__restaurant.open_order(user_choose)
+        print("===", the_order, "===")
+        user_choose = input("Add items now? (y/n): ")
+        if user_choose == "y" or user_choose == "Y" or user_choose == "ט":
+            self._add_items_loop(the_order)
     
     def _show_active_orders(self):
         """
