@@ -57,7 +57,6 @@ class OrderManagerCLI:
             0. Back to Main Menu
         """)
 
-
     def _open_new_order(self):
         print("----Open New Order----")
         tables = self.__restaurant.get_free_tables()
@@ -118,54 +117,29 @@ class OrderManagerCLI:
             0. Back""")
             user_choose = input("choose option: ")
             if user_choose == "1":
+                self._show_order_items(order)
+            elif user_choose == "2":
+                self._add_item_to_order(order)
+            elif user_choose == "3":
+                self._remove_item_from_order(order)
+            elif user_choose == "4":
+                self._print_bill(order)
+            elif user_choose == "0":
+                return
+            else:
+                print("*** Invalid choice ***")
 
-
-        """
-        תפריט עריכת הזמנה ספציפית.
-        
-        דרישות:
-        - לולאה שמציגה:
-            ===== Edit Order #X (Table Y) =====
-            1. Show Order Items
-            2. Add Item
-            3. Remove Item
-            4. Show Current Bill
-            0. Back
-        - לטפל בכל בחירה:
-            "1" -> _show_order_items
-            "2" -> _add_item_to_order
-            "3" -> _remove_item_from_order
-            "4" -> _print_bill
-            "0" -> יציאה
-        
-        Args:
-            order: ההזמנה לעריכה
-        """
-        pass
-    
     def _show_order_items(self, order: Order):
-        """
-        הצגת פריטים בהזמנה.
-        
-        דרישות:
-        - להציג כותרת "Items in Order #X:"
-        - אם ריקה, להציג "(Order is empty)"
-        - אחרת, להציג כל פריט (str של OrderItem)
-        - לחכות ל-"Press Enter to go back..."
-        
-        Args:
-            order: ההזמנה להצגה
-        """
-        pass
-    
+        print(f"---Items in Order #{order.order_id}:---")
+        if not order.items:
+            print("(Order is empty)")
+        else:
+            for order_item in order.items:
+                print(order_item)
+        input("Press Enter to go back...")
+
     def _add_item_to_order(self, order: Order):
-        """
-        הוספת פריט להזמנה (wrapper ל-_add_items_loop).
-        
-        Args:
-            order: ההזמנה להוספה אליה
-        """
-        pass
+        self._add_items_loop(order)
     
     def _add_items_loop(self, order: Order):
         """
