@@ -1,5 +1,8 @@
 import os
 import sys
+
+from table import Table
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from restaurant import Restaurant
@@ -187,23 +190,20 @@ class OrderManagerCLI:
         for order in self.__restaurant.get_active_orders():
             print(order)
         user_choose = input("Table number to close: ")
-
-        """
-        סגירת חשבון והזמנה.
-        
-        דרישות:
-        - להציג רשימת הזמנות פעילות
-        - אם אין, להציג "*** No active orders ***" ולחזור
-        - לבקש "Table number to close: "
-        - לחפש הזמנה פעילה לשולחן
-        - אם לא נמצאה, להציג "*** No active order for table X ***" ולחזור
-        - להציג את החשבון (get_bill)
-        - לבקש "Tip percent (default X%): "
-        - לבקש אישור "Close order? (y/n): "
-        - אם אושר:
-            - לסגור את ההזמנה (restaurant.close_order)
-            - להציג "*** Order closed. Total: ₪XX.XX ***"
-        - אם לא, להציג "*** Closing cancelled ***"
-        - לטפל בשגיאות
-        """
-        pass
+        for order in self.__restaurant.get_active_orders():
+            if order.table.number == int(user_choose):
+                user_choose = order
+        if not isinstance(user_choose, Order):
+            print(f"*** No active order for table {user_choose} ***")
+            return
+        print(user_choose.get_bill())
+        user_tip = input("Tip percent (default 10%): ")
+        if user_tip.isdigit():
+            user_tip = float(user_tip)
+        print(user_choose.get_bill(user_tip))
+        user_close = input("Close order? (y/n): ")
+        if user_close == "y" or user_close == "yes":
+            total = self.__restaurant.close_order(user_choose, user_tip)
+            print(f"*** Order closed. Total: ₪{total} ***")
+            return
+        print("*** Closing cancelled ***")
