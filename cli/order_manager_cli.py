@@ -1,10 +1,5 @@
-# cli/order_manager_cli.py - ניהול הזמנות (לא ממומש - עליכם להשלים!)
-
 import os
 import sys
-
-from table import Table
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from restaurant import Restaurant
@@ -13,19 +8,6 @@ from menu_item import MenuItem, Appetizer, MainCourse
 
 
 class OrderManagerCLI:
-    """
-    ניהול הזמנות - פתיחה, עריכה, וסגירת חשבון.
-    
-    מחלקה זו אחראית על כל הפעולות הקשורות להזמנות:
-    - פתיחת הזמנה חדשה לשולחן
-    - הצגת הזמנות פעילות
-    - עריכת הזמנה (הוספה/הסרה של פריטים)
-    - סגירת חשבון
-    
-    שדות:
-        _restaurant (Restaurant): אובייקט המסעדה
-    """
-    
     def __init__(self, restaurant: Restaurant):
         self.__restaurant = restaurant
     
@@ -140,67 +122,72 @@ class OrderManagerCLI:
 
     def _add_item_to_order(self, order: Order):
         self._add_items_loop(order)
-    
+
     def _add_items_loop(self, order: Order):
-        """
-        לולאת הוספת פריטים להזמנה.
-        
-        דרישות:
-        - לולאה שרצה עד שהמשתמש מקליד 'done' או מחרוזת ריקה
-        - בכל איטרציה:
-            - להציג את כל התפריט (לפי קטגוריות)
-            - לבקש "Item name (or 'done' to finish): "
-            - אם 'done' או ריק -> break
-            - לחפש את הפריט בתפריט
-            - אם לא נמצא -> "*** Item 'X' not found ***", continue
-            - לבקש "Quantity: " (ברירת מחדל: 1)
-            - לבקש "Notes (optional): "
-            - אם זו מנה ראשונה (Appetizer):
-                - להציג "Available breads: ..."
-                - לשאול "Add bread? (leave empty to skip): "
-            - אם זו מנה עיקרית (MainCourse):
-                - להציג "Available sides: ..."
-                - לשאול "Choose side (leave empty to skip): "
-            - להוסיף להזמנה (order.add_item)
-            - להציג "*** Added: X x ItemName ***"
-        
-        Args:
-            order: ההזמנה להוספה אליה
-        """
-        pass
+        categories = self.__restaurant.menu.get_all_categories()
+        while True:
+            print("==== Menu ====\n")
+            for cat in sorted(categories):
+                print(f"---{cat}---\n")
+                for item in self.__restaurant.menu.get_by_category(cat):
+                    print("\t", item)
+            user_item = input("Item name (or 'done' to finish): ")
+            if not user_item or user_item == "done":
+                break
+            user_item = self.__restaurant.menu.find_item(user_item)
+            if user_item is None:
+                print(f"*** Item {user_item} not found ***")
+                continue
+            user_quantity = input("Enter quantity (enter to 1): ")
+            if not user_quantity.isdigit() and user_quantity:
+                raise ValueError("*** Error: you need choose number ***")
+            user_quantity = int(user_quantity)
+            user_notes = input("Enter notes (optional): ")
+            if user_item.get_category() == "Appetizers":
+                print("Available breads:", end="")
+                for bread in Appetizer.get_available_breads():
+                    print(", ", bread, end="")
+                user_bread = input("Add bread? (leave empty to skip): ")
+                if not user_item.add_bread(user_bread):
+                    print("breads no added")
+            elif user_item.get_category == "Main Courses":
+                print("Available sides: ", end="")
+                for side in MainCourse.get_side_options():
+                    print(", ", side)
+                user_side = "Choose side (leave empty to skip): "
+                if not user_item.select_side(user_side):
+                    print("sides no added")
+            order.add_item(user_item, user_quantity, user_notes)
+            print(f"*** Added: {user_item.name} * {user_quantity if user_quantity else 1} {user_notes} ***")
     
     def _remove_item_from_order(self, order: Order):
-        """
-        הסרת פריט מההזמנה.
-        
-        דרישות:
-        - אם ההזמנה ריקה, להציג "*** Order is empty ***" ולחזור
-        - להציג רשימת הפריטים "Items in order:"
-        - לבקש "Item name to remove: "
-        - לחפש את הפריט בתפריט
-        - לקרוא ל-order.remove_item
-        - להציג "*** Item 'X' removed ***" או "*** Item 'X' not found in order ***"
-        
-        Args:
-            order: ההזמנה להסרה ממנה
-        """
-        pass
+        if not order.items:
+            print("*** Order is empty ***")
+            return
+        print("Items in order: ")
+        for item in order.items:
+            print("\t", item)
+        user_item = input("Item name to remove: ")
+        user_item = self.__restaurant.menu.find_item(user_item)
+        if not user_item:
+            print(f"*** Item {user_item} not found in order ***")
+        order.remove_item(user_item)
+        print(f"*** Item {user_item} removed ***")
     
     def _print_bill(self, order: Order):
-        """
-        הדפסת חשבון נוכחי.
-        
-        דרישות:
-        - לנקות מסך
-        - להציג את החשבון (order.get_bill)
-        - לחכות ל-"Press Enter to go back..."
-        
-        Args:
-            order: ההזמנה להדפסת החשבון שלה
-        """
-        pass
+        os.system("cls" if os.name == "nt" else "clear")
+        print(order.get_bill())
+        input("Press Enter to go back...")
     
     def _close_order(self):
+        if not self.__restaurant.get_active_orders():
+            print("*** No active orders ***")
+            return
+        print("--- orders ---")
+        for order in self.__restaurant.get_active_orders():
+            print(order)
+        user_choose = input("Table number to close: ")
+
         """
         סגירת חשבון והזמנה.
         

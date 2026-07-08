@@ -96,7 +96,7 @@ class Appetizer(MenuItem):
         return bread_list
     
     @classmethod
-    def add_bread_to_inventory(cls, bread_type: str, quantity: int):
+    def add_bread_to_inventory(cls, bread_type: str, quantity: int = 1):
         if bread_type in cls.__bread_inventory:
             cls.__bread_inventory[bread_type] += quantity
         else:

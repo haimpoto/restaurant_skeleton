@@ -32,7 +32,7 @@ class RestaurantCLI:
         """הצגת התפריט הראשי"""
         self.clear_screen()
         print("=" * 50)
-        print(f"  Welcome to {self._restaurant.name} Restaurant")
+        print(f"  Welcome to {self._restaurant.name} Restaurant!!!")
         print("=" * 50)
         print()
         print("1. Menu Management")
